@@ -77,7 +77,7 @@ module.exports = function(grunt) {
         '*.js'
       ],
       options: {
-        force: 'true',
+        force: false,
         jshintrc: '.jshintrc',
         ignores: [
           'public/lib/**/*.js',
@@ -128,7 +128,7 @@ module.exports = function(grunt) {
          args: 'nodemon'
     });
     nodemon.stdout.pipe(process.stdout);
-    nodemon.stderr.pipe(process.stderr);
+    nodemon.stderr.pipe(process.stderr);;
 
     grunt.task.run([ 'watch' ]);
   });
@@ -137,7 +137,7 @@ module.exports = function(grunt) {
   // Main grunt tasks
   ////////////////////////////////////////////////////
 
-  grunt.registerTask('test', ['mochaTest']);
+  grunt.registerTask('test', ['mochaTest', 'jshint']);
 
   grunt.registerTask('build', ['concat', 'uglify', 'cssmin']);
 
@@ -149,9 +149,11 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('deploy', [
-    // add your deploy tasks here
-  ]);
-
-
+  grunt.registerTask('deploy', 'we\'re deploying this!!', function() {
+    // grunt.task.run('test');
+    grunt.task.requires('test');
+    // grunt.task.run('build');
+    grunt.task.requires('build');
+    grunt.log.writeln('SUCCESSS!!');
+  });
 };
