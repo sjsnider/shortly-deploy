@@ -19,17 +19,18 @@ module.exports = function(grunt) {
         separator: ';',
       },
       dist: {
-        src: ['public/client/*.js'/*, 'public/lib/*.js'*/],
+        src: ['public/client/*.js'],
         dest: 'public/dist/built.js',
       }
     },
 
     mochaTest: {
       test: {
-        options: {
-          reporter: 'spec'
-        },
-        src: ['test/**/*.js']
+        src: ['test/**/*.js'],
+      },
+      options: {
+        force: true,
+        reporter: 'spec'
       }
     },
 
@@ -38,13 +39,6 @@ module.exports = function(grunt) {
         script: 'server.js'
       }
     },
-
-    /*uglify: {
-      build: {
-        src: 'public/dist/built.js',
-        dest: 'public/dist/built.min.js'
-      }
-    },*/
 
     uglify: {
       /*options: {
@@ -63,9 +57,6 @@ module.exports = function(grunt) {
         {'public/dist/built.min.js': 'public/dist/built.js'}]
       }
     },
-
-
-
 
     jshint: {
       files: [
@@ -114,7 +105,11 @@ module.exports = function(grunt) {
     },
 
     shell: {
+      setenv: {
+        command: 'azure site config add MONCONNECT="mongodb://sjsnider:minlyhr13@ds030827.mongolab.com:30827/MongoLab-lo"'
+      },
       prodServer: {
+        command: 'git push azure mongo:master'
       }
     },
   });
@@ -128,7 +123,7 @@ module.exports = function(grunt) {
          args: 'nodemon'
     });
     nodemon.stdout.pipe(process.stdout);
-    nodemon.stderr.pipe(process.stderr);;
+    nodemon.stderr.pipe(process.stderr);
 
     grunt.task.run([ 'watch' ]);
   });
@@ -144,16 +139,11 @@ module.exports = function(grunt) {
   grunt.registerTask('upload', function(n) {
     if(grunt.option('prod')) {
       // add your production server task here
+      grunt.task.run('shell');
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
   });
 
-  grunt.registerTask('deploy', 'we\'re deploying this!!', function() {
-    // grunt.task.run('test');
-    grunt.task.requires('test');
-    // grunt.task.run('build');
-    grunt.task.requires('build');
-    grunt.log.writeln('SUCCESSS!!');
-  });
+  grunt.registerTask('deploy', ['test', 'build']);
 };

@@ -3,9 +3,8 @@ var express = require('express');
 var expect = require('chai').expect;
 var app = require('../server-config.js');
 
-var db = require('../app/config');
-var User = require('../app/models/user');
-var Link = require('../app/models/link');
+var User = require('../mongo/users');
+var Link = require('../mongo/links');
 
 /////////////////////////////////////////////////////
 // NOTE: these tests are designed for mongo!
@@ -91,16 +90,13 @@ xdescribe('', function() {
     describe('With previously saved urls: ', function() {
 
       beforeEach(function(done) {
-        link = new Link({
+        Link.saveLink({
           url: 'http://www.roflzoo.com/',
           title: 'Rofl Zoo - Daily funny animal pictures',
           base_url: 'http://127.0.0.1:4568',
           visits: 0
-        })
+        }, function(){});
 
-        link.save(function() {
-          done();
-        });
       });
 
       it('Returns the same shortened code if attempted to add the same URL twice', function(done) {
@@ -124,6 +120,8 @@ xdescribe('', function() {
           .expect(302)
           .expect(function(res) {
             var redirect = res.headers.location;
+            console.log(sha);
+            console.log(redirect);
             expect(redirect).to.equal('http://www.roflzoo.com/');
           })
           .end(done);
@@ -208,12 +206,10 @@ xdescribe('', function() {
   describe('Account Login:', function(){
 
     beforeEach(function(done) {
-      new User({
+      User.saveUser({
           'username': 'Phillip',
           'password': 'Phillip'
-      }).save(function(){
-        done();
-      });
+      }, function(){});
     });
 
     it('Logs in existing users', function(done) {
@@ -224,6 +220,7 @@ xdescribe('', function() {
           'password': 'Phillip' })
         .expect(302)
         .expect(function(res) {
+          console.log(res.headers.location);
           expect(res.headers.location).to.equal('/');
         })
         .end(done);
