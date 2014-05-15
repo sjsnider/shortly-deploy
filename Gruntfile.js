@@ -19,7 +19,7 @@ module.exports = function(grunt) {
         separator: ';',
       },
       dist: {
-        src: ['public/client/*.js', 'public/lib/*.js'],
+        src: ['public/client/*.js'/*, 'public/lib/*.js'*/],
         dest: 'public/dist/built.js',
       }
     },
@@ -39,12 +39,33 @@ module.exports = function(grunt) {
       }
     },
 
-    uglify: {
+    /*uglify: {
       build: {
         src: 'public/dist/built.js',
         dest: 'public/dist/built.min.js'
       }
+    },*/
+
+    uglify: {
+      /*options: {
+        mangle: {
+          except: ['jQuery', 'Backbone']
+        }
+      },*/
+      build: {
+        files: [{
+          expand: true,
+          cwd: 'public/lib/',
+          src: '*.js',
+          dest: 'public/dist/',
+          ext: '.min.js'
+        },
+        {'public/dist/built.min.js': 'public/dist/built.js'}]
+      }
     },
+
+
+
 
     jshint: {
       files: [
