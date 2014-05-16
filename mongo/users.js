@@ -10,6 +10,15 @@ var userSchema = mongoose.Schema({
 
 var Users = mongoose.model('Users', userSchema);
 
+userSchema.pre('save', function(next){
+  var cipher = Promise.promisify(bcrypt.hash);
+  return cipher(this.password, null, null)
+  .then(function(hash) {
+    this.password = hash;
+    next();
+  });
+});
+
 Users.prototype.comparePassword = function(attemptedPassword, callback) {
   bcrypt.compare(attemptedPassword, this.password, function(err, isMatch) {
     if (err) {
@@ -17,25 +26,6 @@ Users.prototype.comparePassword = function(attemptedPassword, callback) {
       return;
     }
     callback(isMatch);
-  });
-};
-
-Users.saveUser = function(user, callback) {
-  var cipher = Promise.promisify(bcrypt.hash);
-  return cipher(user.password, null, null)
-  .then(function(hash) {
-    var newUser = new Users({
-      username: user.username,
-      password: hash
-    });
-    newUser.save(function(err) {
-      if (err) {
-        console.log('error saving user: ', err);
-        return;
-      }
-      console.log('user saved');
-      callback(newUser);
-    });
   });
 };
 
