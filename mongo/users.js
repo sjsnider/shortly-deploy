@@ -11,10 +11,11 @@ var userSchema = mongoose.Schema({
 var Users = mongoose.model('Users', userSchema);
 
 userSchema.pre('save', function(next){
+  var newUser = this;
   var cipher = Promise.promisify(bcrypt.hash);
-  return cipher(this.password, null, null)
+  return cipher(newUser.password, null, null)
   .then(function(hash) {
-    this.password = hash;
+    newUser.password = hash;
     next();
   });
 });

@@ -109,7 +109,7 @@ module.exports = function(grunt) {
         command: 'azure site config add MONCONNECT="mongodb://sjsnider:minlyhr13@ds030827.mongolab.com:30827/MongoLab-lo"'
       },
       prodServer: {
-        command: 'git push azure mongo:master'
+        command: 'git push azure mongoRefactor:master'
       }
     },
   });
